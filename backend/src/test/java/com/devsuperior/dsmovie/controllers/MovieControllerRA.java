@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 public class MovieControllerRA {
 
+    private Long existingMovieId, nonExistingMovieId;
     private String movieTitle;
 
     @BeforeEach
@@ -17,6 +18,10 @@ public class MovieControllerRA {
         baseURI = "http://localhost:8080";
 
         movieTitle = "Venom";
+
+        existingMovieId = 1L;
+        nonExistingMovieId = 100L;
+
     }
 
 	@Test
@@ -40,11 +45,25 @@ public class MovieControllerRA {
 	}
 	
 	@Test
-	public void findByIdShouldReturnMovieWhenIdExists() {		
+	public void findByIdShouldReturnMovieWhenIdExists() {
+        given()
+                .get("/movies/{id}", existingMovieId)
+        .then()
+                .statusCode(200)
+                .body("id", is(1))
+                .body("title", equalTo("The Witcher"))
+                .body("score", is(4.5F))
+                .body("count", is(2));
+
 	}
 	
 	@Test
-	public void findByIdShouldReturnNotFoundWhenIdDoesNotExist() {	
+	public void findByIdShouldReturnNotFoundWhenIdDoesNotExist() {
+        given()
+                .get("/movies/{id}", nonExistingMovieId)
+        .then()
+                .statusCode(404)
+                .body("error", equalTo("Recurso não encontrado"));
 	}
 	
 	@Test
